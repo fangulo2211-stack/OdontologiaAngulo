@@ -16,11 +16,13 @@
 
 /* CURSORES LOCALES PERSONALIZADOS DE BUBBLE (Optimizados a 32x32) */
 html, body, button, a, select, input, textarea, option {
-    cursor: url('../assets/imagen/bubble-cerrado.png'), auto !important;
+    /* CAMBIO: Ruta corregida directo a la carpeta imagen suelta */
+    cursor: url('../imagen/bubble-cerrado.png'), auto !important;
 }
 
 html:active, body:active, button:active, a:active, select:active, input:active, textarea:active {
-    cursor: url('../assets/imagen/bubble-abierto.png'), auto !important;
+    /* CAMBIO: Ruta corregida directo a la carpeta imagen suelta */
+    cursor: url('../imagen/bubble-abierto.png'), auto !important;
 }
 
 body {
@@ -33,112 +35,105 @@ body {
 }
 
 /* ==========================================================================
-   ANIMACIÓN DEL VACÍO DENTAL (FONDO DINÁMICO PARA EL TEATRO)
-   ========================================================================== */
-.teatro-body {
-    position: relative;
-    background: radial-gradient(circle at center, #150019 0%, #050008 100%);
-    min-height: 100vh;
-}
-
-.teatro-body::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-image: 
-        url('assets/imagen/modelo-3d-2.png'),
-        url('../assets/imagen/modelo-3d-2.png');
-    background-size: 80px;
-    background-position: 10% 20%;
-    background-repeat: no-repeat;
-    opacity: 0.06;
-    animation: flotarVacio 20s infinite linear;
-    pointer-events: none;
-    z-index: 0;
-}
-
-@keyframes flotarVacio {
-    0% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(180deg); }
-    100% { transform: translateY(0) rotate(360deg); }
-}
-
-/* ==========================================================================
-   PANTALLA DE ENTRADA / MANDÍBULA (INDEX.HTML)
+   DISEÑO PÁGINA INICIAL / INTRODUCCIÓN (index.html)
    ========================================================================== */
 .intro-body {
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    background: #000;
+    background: radial-gradient(circle, #1a0510 0%, #050108 100%);
+}
+
+#intro-screen {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 2000;
+    background: black;
 }
 
 .jaw-container {
-    position: relative;
     width: 100vw;
     height: 100vh;
+    position: relative;
+    overflow: hidden;
 }
 
 .jaw-top, .jaw-bottom {
     position: absolute;
     width: 100%;
     height: 50%;
-    background: #540202;
-    transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
-    z-index: 10;
-    display: flex;
-    justify-content: center;
+    left: 0;
+    background: #0d0208;
+    border: 8px solid var(--circo-rojo);
+    transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+    z-index: 2002;
 }
 
-.jaw-top { top: 0; align-items: flex-end; border-bottom: 12px solid var(--circo-rojo); }
-.jaw-bottom { bottom: 0; align-items: flex-start; border-top: 12px solid var(--circo-rojo); }
+.jaw-top {
+    top: 0;
+    border-bottom: none;
+}
 
+.jaw-bottom {
+    bottom: 0;
+    border-top: none;
+}
+
+/* Simulación de dientes afilados del circo */
 .teeth-top, .teeth-bottom {
+    position: absolute;
     width: 100%;
     height: 50px;
-    background-image: linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.666%, transparent 66.666%),
-                      linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.666%, transparent 66.666%);
-    background-size: 50px 100px;
+    background-image: repeat-x;
+    background-size: 60px 50px;
+    left: 0;
+}
+
+.teeth-top {
+    bottom: 0;
+    background-image: linear-gradient(45deg, transparent 50%, white 50%), linear-gradient(-45deg, transparent 50%, white 50%);
+}
+
+.teeth-bottom {
+    top: 0;
+    background-image: linear-gradient(135deg, transparent 50%, white 50%), linear-gradient(-135deg, transparent 50%, white 50%);
 }
 
 .logo-intro {
     position: absolute;
     top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1);
+    z-index: 2005;
+    transition: transform 1s ease-in-out;
     text-align: center;
-    z-index: 5;
 }
 
 .logo-intro img {
-    max-width: 350px;
+    max-width: 280px;
     filter: drop-shadow(0 0 20px var(--circo-rojo));
-    animation: latido 1.5s infinite alternate;
+    animation: flotar 3s ease-in-out infinite alternate;
 }
 
 .click-text {
     position: absolute;
-    bottom: 8%; width: 100%;
+    bottom: 60px;
+    width: 100%;
     text-align: center;
-    font-family: var(--fuente-circo);
     color: var(--circo-amarillo);
-    font-size: 1.5rem;
-    text-shadow: 2px 2px #000;
-    z-index: 20;
-    animation: parpadeo 1s infinite;
+    font-family: var(--fuente-circo);
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    z-index: 2010;
+    animation: parpadeo 0.8s infinite alternate;
+    text-shadow: 0 0 10px rgba(255, 235, 59, 0.6);
 }
 
-/* ==========================================================================
-   PANTALLA DE TRANSICIÓN CON MARCO DE DIAPOSITIVA (FONDO-CIRCO)
-   ========================================================================== */
+/* Diapositivas de Transición */
 #slide-transition {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: #000;
-    z-index: 100;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -146,229 +141,245 @@ body {
 }
 
 .slide-frame-container {
-    width: 100%;
-    max-width: 900px;
-    height: 550px;
-    background: url('../assets/imagen/fondo-circo.png') no-repeat center center;
-    background-size: 100% 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 60px;
+    max-width: 800px;
+    text-align: center;
 }
 
 .slide {
     font-family: var(--fuente-circo);
     font-size: 2.2rem;
-    color: #fff;
-    text-align: center;
-    text-shadow: 3px 3px 0px #000, 0 0 10px var(--circo-rojo);
-    line-height: 1.4;
+    color: white;
+    line-height: 1.5;
+    text-shadow: 0 0 15px var(--circo-azul);
+    animation: escalaSuave 0.5s ease-out;
 }
 
+#slide1 { text-shadow: 0 0 15px var(--circo-rojo); }
+#slide2 { text-shadow: 0 0 15px var(--circo-azul); }
+#slide3 { text-shadow: 0 0 15px var(--circo-amarillo); }
+#slide4 { text-shadow: 0 0 25px #00ffcc; color: #00ffcc; }
+
 /* ==========================================================================
-   ESTRUCTURA DEL TEATRO PRINCIPAL Y HEADER
+   ESTRUCTURA DEL TEATRO / INTERIOR (home, elenco, laboratorio, etc.)
    ========================================================================== */
+.teatro-body {
+    background-image: linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)), url('../imagen/fondo-carpa.png');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100vh;
+}
+
 .circo-header {
-    background: rgba(0, 0, 0, 0.85);
-    border: 5px solid var(--circo-rojo);
-    margin: 20px;
-    padding: 25px;
-    border-radius: 20px;
-    backdrop-filter: blur(5px);
-    box-shadow: 0 0 35px rgba(233, 30, 99, 0.3);
-    position: relative;
-    z-index: 10;
+    background: rgba(15, 2, 8, 0.95);
+    border-bottom: 5px solid var(--circo-rojo);
+    box-shadow: 0 5px 25px rgba(0,0,0,0.8);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .banner-caine {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 35px;
-    flex-wrap: wrap;
-}
-
-.caine-img {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    border: 5px solid var(--circo-azul);
-    object-fit: cover;
-    box-shadow: 0 0 25px var(--circo-azul);
-}
-
-.glow-yellow {
-    font-family: var(--fuente-circo);
-    color: var(--circo-amarillo);
-    font-size: 2.8rem;
-    margin: 0;
-    text-shadow: 4px 4px 0px var(--circo-rojo);
-}
-
-.universidades {
-    font-size: 1rem;
-    color: white;
-    font-weight: bold;
-    background: rgba(233, 30, 99, 0.3);
-    padding: 6px 16px;
-    border-radius: 50px;
-    display: inline-block;
-    margin-top: 10px;
-    border: 1px solid var(--circo-rojo);
-}
-
-.menu-flotante {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 25px;
-    flex-wrap: wrap;
-}
-
-.btn-nav {
-    text-decoration: none;
-    background: var(--circo-rojo);
-    color: white;
-    font-family: var(--fuente-circo);
-    padding: 12px 24px;
-    border-radius: 8px;
-    border: 3px solid var(--circo-amarillo);
-    box-shadow: 0 4px 0 #b71c1c;
-    transition: all 0.2s ease;
-}
-
-.btn-nav:hover, .btn-nav.activo {
-    background: var(--circo-azul);
-    transform: scale(1.05) translateY(-2px);
-    box-shadow: 0 6px 0 #0d47a1;
-}
-
-.btn-nav:active {
-    transform: translateY(4px);
-    box-shadow: 0 0 0 transparent;
-}
-
-.escenario-principal {
-    position: relative;
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
-    z-index: 5;
+    gap: 30px;
 }
 
-/* ==========================================================================
-   BURBUJA INTERACTIVA DE CAINE
-   ========================================================================== */
-#caine-bubble-container {
-    position: fixed;
-    top: 30px;
-    right: 30px;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    pointer-events: none;
-    transform: translateX(400px);
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.caine-img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    animation: cabeceo 2s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 8px var(--circo-amarillo));
 }
 
-#caine-bubble-container.show { transform: translateX(0); }
+.titulo-container {
+    text-align: left;
+}
 
-.caine-bubble-text {
-    background: white;
-    color: black;
+.titulo-container h1 {
+    margin: 0;
+    font-family: var(--fuente-circo);
+    font-size: 2.5rem;
+    letter-spacing: 3px;
+}
+
+.universidades {
+    margin: 3px 0 0 0;
+    font-size: 0.9rem;
+    color: var(--circo-azul);
     font-weight: bold;
-    padding: 15px;
-    border-radius: 15px;
-    position: relative;
-    max-width: 220px;
-    border: 3px solid var(--circo-rojo);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    letter-spacing: 1px;
 }
 
-.caine-bubble-text::after {
-    content: ""; position: absolute; top: 50%; right: -15px;
-    transform: translateY(-50%); border-width: 10px 0 10px 15px;
-    border-style: solid; border-color: transparent transparent transparent white;
+.slogan {
+    margin: 4px 0 0 0;
+    font-style: italic;
+    color: #bbb;
+    font-size: 0.95rem;
 }
 
-.caine-bubble-avatar {
-    width: 75px; height: 75px; border-radius: 50%;
-    border: 3px solid var(--circo-amarillo); background: var(--circo-negro);
+/* Menú de Navegación Flotante Estilo Carpa */
+.menu-flotante {
+    display: flex;
+    justify-content: center;
+    background: #000;
+    border-top: 2px solid #222;
+    padding: 5px 0;
+}
+
+.btn-nav {
+    color: white;
+    text-decoration: none;
+    font-family: var(--fuente-circo);
+    padding: 10px 25px;
+    font-size: 0.95rem;
+    transition: 0.3s;
+    letter-spacing: 1px;
+}
+
+.btn-nav:hover {
+    color: var(--circo-amarillo);
+    text-shadow: 0 0 8px var(--circo-amarillo);
+    transform: scale(1.05);
+}
+
+.btn-nav.activo {
+    color: var(--circo-rojo);
+    text-shadow: 0 0 10px var(--circo-rojo);
+    border-bottom: 3px solid var(--circo-rojo);
+}
+
+/* Escenario Contenedor Principal */
+.escenario-principal {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.section-card {
+    background: rgba(10, 10, 10, 0.85);
+    border: 4px solid var(--circo-azul);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.section-title {
+    font-family: var(--fuente-circo);
+    color: var(--circo-amarillo);
+    font-size: 1.8rem;
+    margin-top: 0;
+    text-shadow: 0 2px 4px black;
+    letter-spacing: 1px;
 }
 
 /* ==========================================================================
-   SECCIÓN: STAFF (ELENCO - ZOOM Y DESTELLO VIP)
+   ELEMENTOS INTERACTIVOS ESPECÍFICOS DE LAS SECCIONES
    ========================================================================== */
+
+/* Grid del Elenco (elenco.html) */
 .staff-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
 }
 
 .staff-member {
-    background: rgba(0, 0, 0, 0.75);
-    border: 4px solid white;
-    border-radius: 20px;
-    padding: 25px;
+    background: rgba(15, 15, 15, 0.9);
+    border-radius: 15px;
+    padding: 20px;
     text-align: center;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-    transition: transform 0.3s ease;
+    transition: 0.3s;
+    border: 3px solid #333;
 }
 
-.staff-member:hover { transform: translateY(-8px); }
+.staff-member:hover {
+    transform: translateY(-8px);
+}
 
-/* ZOOM ELÁSTICO EN LAS IMÁGENES DEL ELENCO */
 .staff-member img {
-    width: 110px; height: 110px; border-radius: 50%; object-fit: cover;
-    margin-bottom: 15px; border: 4px solid white;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid white;
+    margin-bottom: 15px;
+    background: #222;
 }
 
-.staff-member:hover img {
-    transform: scale(1.18) rotate(3deg);
-    border-color: var(--circo-amarillo);
+.staff-member h3 {
+    margin: 10px 0 5px 0;
+    font-family: var(--fuente-circo);
+    font-size: 1.2rem;
+    letter-spacing: 1px;
 }
 
-/* DESTELLO DE NEÓN VIP DORADO SÓLO PARA LA TARJETA DEL DR. ANGULO */
-.staff-grid .staff-member:first-child {
-    position: relative;
-    overflow: hidden;
-    border: 4px solid var(--circo-amarillo) !important;
-    box-shadow: 0 0 30px rgba(255, 235, 59, 0.4);
+.staff-member .rol {
+    margin: 0 0 12px 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
 }
 
-.staff-grid .staff-member:first-child::before {
-    content: ''; position: absolute; top: -50%; left: -60%; width: 30%; height: 200%;
-    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%);
-    transform: rotate(25deg); animation: destelloVIP 4.5s infinite ease-in-out; pointer-events: none; z-index: 1;
+.staff-member .desc {
+    font-size: 0.9rem;
+    color: #ccc;
+    line-height: 1.4;
+    display: block;
 }
 
-@keyframes destelloVIP {
-    0% { left: -60%; } 15% { left: 130%; } 100% { left: 130%; }
+.card-red { border-color: var(--circo-rojo); }
+.card-red:hover { box-shadow: 0 0 20px rgba(233, 30, 99, 0.4); }
+.card-blue { border-color: var(--circo-azul); }
+.card-blue:hover { box-shadow: 0 0 20px rgba(33, 150, 243, 0.4); }
+.card-yellow { border-color: var(--circo-amarillo); }
+.card-yellow:hover { box-shadow: 0 0 20px rgba(255, 235, 59, 0.4); }
+
+/* Laboratorio 3D Flujo (laboratorio.html) */
+.lab-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 30px;
 }
 
-.staff-grid .staff-member:first-child h3 {
+.lab-step {
+    flex: 1;
+    min-width: 250px;
+    background: #000;
+    border: 2px solid #222;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+}
+
+.lab-step img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.lab-arrow {
+    font-size: 2rem;
     color: var(--circo-amarillo);
-    animation: vibracionBrillo 2s infinite alternate;
+    font-family: var(--fuente-circo);
+    animation: parpadeo 0.6s infinite alternate;
 }
 
-@keyframes vibracionBrillo {
-    from { text-shadow: 0 0 8px rgba(255, 235, 59, 0.5); }
-    to { text-shadow: 0 0 18px rgba(255, 235, 59, 0.9), 0 0 5px #fff; }
+.malla-preview {
+    position: relative;
+    width: 100%;
+    height: 160px;
 }
 
-/* ==========================================================================
-   SECCIÓN: LABORATORIO DIGITAL Y GALERÍA
-   ========================================================================== */
-.section-card { background: rgba(0, 0, 0, 0.8); border: 4px solid var(--circo-azul); border-radius: 20px; padding: 30px; }
-.section-title { font-family: var(--fuente-circo); color: var(--circo-amarillo); text-align: center; font-size: 2.2rem; }
-.lab-container { display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 30px; }
-.lab-step { text-align: center; max-width: 300px; }
-.lab-step img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; border: 3px solid var(--circo-amarillo); }
-.lab-arrow { font-size: 3.5rem; color: var(--circo-rojo); animation: latido 1s infinite alternate; }
-.malla-preview { position: relative; width: 100%; height: 200px; }
 .malla-preview img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
 .overlay-img { opacity: 0.4; mix-blend-mode: screen; animation: glitchEfecto 0.3s infinite; }
 
@@ -383,14 +394,43 @@ body {
    ========================================================================== */
 #abstraction-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #000; opacity: 0; pointer-events: none; z-index: 99999;
+    background: black; z-index: 99999; display: none;
+    pointer-events: none;
 }
 
-@keyframes parpadeo { 50% { opacity: 0; } }
-@keyframes latido { from { transform: scale(1); } to { transform: scale(1.05); } }
+/* ==========================================================================
+   ANIMACIONES CLAVE DE EFECTOS
+   ========================================================================== */
+@keyframes flotar {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-15px); }
+}
+@keyframes parpadeo {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+@keyframes cabeceo {
+    0% { transform: rotate(-8deg); }
+    100% { transform: rotate(8deg); }
+}
+@keyframes escalaSuave {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+@keyframes latido {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.15); }
+}
 @keyframes glitchEfecto {
-    0% { transform: translate(0); filter: hue-rotate(0deg); }
-    30% { transform: translate(-3px, 2px); }
-    60% { transform: translate(3px, -2px); filter: hue-rotate(90deg); }
-    100% { transform: translate(0); }
+    0% { transform: translate(2px, 1px) rotate(0deg); filter: hue-rotate(0deg); }
+    20% { transform: translate(-1px, -1px) rotate(1deg); }
+    40% { transform: translate(-3px, 0px) rotate(-1deg); filter: hue-rotate(90deg); }
+    60% { transform: translate(1px, 2px) rotate(0deg); }
+    80% { transform: translate(-2px, -1px) rotate(1deg); filter: hue-rotate(180deg); }
+    100% { transform: translate(2px, -2px) rotate(0deg); filter: hue-rotate(360deg); }
+}
+
+.glow-yellow {
+    color: var(--circo-amarillo);
+    text-shadow: 0 0 12px rgba(255, 235, 59, 0.7);
 }
