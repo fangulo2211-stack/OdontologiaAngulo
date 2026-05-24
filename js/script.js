@@ -31,278 +31,207 @@ window.addEventListener('DOMContentLoaded', () => {
 function iniciarEspectaculo() {
     const jawTop = document.querySelector('.jaw-top');
     const jawBottom = document.querySelector('.jaw-bottom');
-    const clickText = document.querySelector('.click-text');
-    
-    if (!jawTop || !jawBottom) return;
+    const logo = document.querySelector('.logo-intro');
+    const textClick = document.querySelector('.click-text');
 
-    if (clickText) clickText.style.display = 'none';
     if (audioEspera) audioEspera.pause();
-    
-    if (audioTransicion) {
-        audioTransicion.volume = 0.15;
-        audioTransicion.play().catch(err => console.log("Audio bloqueado: ", err));
-    }
+    if (audioTransicion) audioTransicion.play().catch(e => console.log(e));
 
-    jawTop.style.transform = 'translateY(-100%)';
-    jawBottom.style.transform = 'translateY(100%)';
+    if(jawTop) jawTop.style.transform = "translateY(-100%)";
+    if(jawBottom) jawBottom.style.transform = "translateY(100%)";
+    if(logo) logo.style.transform = "scale(0) rotate(720deg)";
+    if(textClick) textClick.style.display = "none";
 
     setTimeout(() => {
-        const introScreen = document.getElementById('intro-screen');
-        const slideScreen = document.getElementById('slide-transition');
-        
-        if (introScreen) introScreen.style.display = 'none';
-        if (slideScreen) {
-            slideScreen.style.display = 'flex';
-            
-            const slides = document.querySelectorAll('.slide');
-            if (slides.length > 0) {
-                const tiempoPorSlide = audioTransicion && audioTransicion.duration ? (audioTransicion.duration * 1000) / slides.length : 8000;
-                reproducirDiapositivasSincronizadas(slides, 0, tiempoPorSlide);
-            }
-        }
+        const intro = document.getElementById('intro-screen');
+        const transitionScreen = document.getElementById('slide-transition');
+        if(intro) intro.style.display = 'none';
+        if(transitionScreen) transitionScreen.style.display = 'flex';
+        mostrarDiapositivas();
     }, 1200);
 }
 
-function reproducirDiapositivasSincronizadas(slides, index, tiempoEspera) {
-    if (index >= slides.length) {
-        window.speechSynthesis.cancel();
-        window.location.href = 'home.html';
-        return;
+function mostrarDiapositivas() {
+    const slides = [
+        document.getElementById('slide1'),
+        document.getElementById('slide2'),
+        document.getElementById('slide3'),
+        document.getElementById('slide4')
+    ];
+    let currentSlide = 0;
+
+    function procesarSiguiente() {
+        if (currentSlide > 0) {
+            slides[currentSlide - 1].style.display = 'none';
+        }
+        if (currentSlide < slides.length) {
+            slides[currentSlide].style.display = 'block';
+            currentSlide++;
+            setTimeout(procesarSiguiente, 3200);
+        } else {
+            window.location.href = "home.html";
+        }
     }
-
-    slides.forEach(s => s.style.display = 'none');
-    slides[index].style.display = 'block';
-
-    window.speechSynthesis.cancel();
-    const lectura = new SpeechSynthesisUtterance(slides[index].innerText);
-    lectura.lang = 'es-ES';
-    lectura.rate = 0.9;
-    lectura.pitch = 1.1;
-
-    window.speechSynthesis.speak(lectura);
-
-    setTimeout(() => {
-        reproducirDiapositivasSincronizadas(slides, index + 1, tiempoEspera);
-    }, tiempoEspera);
+    procesarSiguiente();
 }
 
 // ==========================================================================
-// 2. BURBUJA DE TEXTO INTERACTIVA DE CAINE
+// 2. TEMPORIZADOR DE ABSTRACCIÓN GENERAL (2 MINUTOS DE INACTIVIDAD)
+// ==========================================================================
+let tiempoInactividad;
+function iniciarContadorAbstraccion() {
+    resetearTemporizador();
+    const eventos = ['mousemove', 'keydown', 'click', 'scroll'];
+    eventos.forEach(evt => window.addEventListener(evt, resetearTemporizador));
+}
+
+function resetearTemporizador() {
+    clearTimeout(tiempoInactividad);
+    tiempoInactividad = setTimeout(irAlVacioHTML, 120000); // 2 minutos estrictos
+}
+
+// ==========================================================================
+// 3. BURBUJA INTERACTIVA FLOTANTE DE CAINE (DICE FRASES ALEATORIAS)
 // ==========================================================================
 const frasesCaine = [
-    "¡Increíble elección! ¡Tus dientes van a brillar más que un render en 4K!",
-    "¡Cuidado con el vacío digital, pero sobre todo... ¡con las caries!",
-    "¡Una limpieza profunda mantendrá tus texturas completamente puras!",
-    "¡No te preocupes, mi asistente Bubble no muerde... muy seguido!",
-    "¡Estupendo! Agendaremos esto en el registro central antes de que pierdas la cordura."
+    "¡Recuerda limpiar tus molares antes de que la realidad colapse!",
+    "¿Sabías que un render en 3D de tus dientes es matemáticamente perfecto?",
+    "¡El doctor Angulo está preparing el instrumental clínico virtual!",
+    "No te quedes quieto mucho tiempo... ¡El vacío digital tiene hambre!",
+    "¡Pomni está intentando escapar de la carpa usando brackets estructurales!",
+    "¡Los domingos cerramos para evitar distorsiones matriciales en Parcona!"
 ];
 
 function inyectarBurbujaCaine() {
-    if (document.getElementById('caine-bubble-container')) return;
-
-    const bubbleHTML = `
-        <div id="caine-bubble-container">
-            <div class="caine-bubble-text" id="caine-text">¡Hola!</div>
-            <img src="assets/imagen/doctor-angulo.png" class="caine-bubble-avatar" alt="Caine Avatar">
-        </div>
+    const burbuja = document.createElement('div');
+    burbuja.id = "burbuja-caine-chat";
+    burbuja.innerHTML = `
+        <img src="imagen/bubble-cerrado.png" alt="Caine Bubble" id="burbuja-avatar-img">
+        <div id="burbuja-texto-caja">¡Hola! Soy Bubble. Hazme click para un sabio consejo dental.</div>
     `;
-    document.body.insertAdjacentHTML('beforeend', bubbleHTML);
+    
+    // Estilos inline rápidos para posicionarlo abajo a la derecha de la pantalla
+    Object.assign(burbuja.style, {
+        position: 'fixed', bottom: '20px', right: '20px',
+        display: 'flex', alignItems: 'center', background: 'rgba(10,10,10,0.95)',
+        border: '3px solid #ffeb3b', padding: '12px', borderRadius: '50px',
+        zIndex: '10000', maxWidth: '340px', color: 'white', fontFamily: "'Roboto', sans-serif",
+        fontSize: '0.85rem', boxShadow: '0 0 15px rgba(255,235,59,0.4)', cursor: 'pointer',
+        transition: '0.3s'
+    });
+    
+    document.body.appendChild(burbuja);
+    
+    const imgAvatar = document.getElementById('burbuja-avatar-img');
+    imgAvatar.style.width = "40px";
+    imgAvatar.style.marginRight = "10px";
 
-    const disparadores = document.querySelectorAll('.treatment-item, .btn-circus');
-    disparadores.forEach(elemento => {
-        elemento.addEventListener('click', (e) => {
-            if (elemento.classList.contains('btn-circus') && !document.getElementById('patient-name').value) return;
-            lanzarBurbujaCaine();
-        });
+    const textoCaja = document.getElementById('burbuja-texto-caja');
+
+    burbuja.addEventListener('click', () => {
+        // CAMBIO: Ruta de imagen interactiva corregida sin assets/
+        imgAvatar.src = "imagen/bubble-abierto.png";
+        const fraseAleatoria = frasesCaine[Math.floor(Math.random() * frasesCaine.length)];
+        textoCaja.innerText = fraseAleatoria;
+        textoCaja.style.color = "#ffeb3b";
+        textoCaja.style.fontWeight = "bold";
+        
+        setTimeout(() => {
+            // CAMBIO: Regresa al estado cerrado con la ruta directa corregida
+            imgAvatar.src = "imagen/bubble-cerrado.png";
+            textoCaja.style.color = "white";
+            textoCaja.style.fontWeight = "normal";
+        }, 3000);
     });
 }
 
-function lanzarBurbujaCaine() {
-    const contenedor = document.getElementById('caine-bubble-container');
-    const textoBox = document.getElementById('caine-text');
-    if (!contenedor || !textoBox) return;
-
-    const fraseAleatoria = frasesCaine[Math.floor(Math.random() * frasesCaine.length)];
-    textoBox.innerText = fraseAleatoria;
-
-    contenedor.classList.add('show');
-
-    window.speechSynthesis.cancel();
-    const vozBurbuja = new SpeechSynthesisUtterance(fraseAleatoria);
-    vozBurbuja.lang = 'es-ES';
-    vozBurbuja.rate = 1.1;
-    window.speechSynthesis.speak(vozBurbuja);
-
-    setTimeout(() => {
-        contenedor.classList.remove('show');
-    }, 4500);
-}
-
 // ==========================================================================
-// 3. EFECTO GLITCH EN LOS PRECIOS
+// 4. MÓDULO DE TRATAMIENTOS - GLITCH DE PRECIOS AL PASAR EL MOUSE (galeria.html)
 // ==========================================================================
 function configurarGlitchPrecios() {
     const cajasPrecio = document.querySelectorAll('.precio-box');
-    
     cajasPrecio.forEach(caja => {
-        const precioReal = caja.getAttribute('data-precio');
-        if (!precioReal) return;
-
+        const precioOriginal = caja.getAttribute('data-precio');
+        
         caja.addEventListener('mouseenter', () => {
-            let iteraciones = 0;
-            const intervalo = setInterval(() => {
-                caja.innerText = "S/. " + (Math.random() * 900 + 100).toFixed(0) + " ¿¿?";
-                iteraciones++;
-                
-                if (iteraciones >= 10) {
-                    clearInterval(intervalo);
-                    caja.innerText = "S/. " + precioReal;
-                }
-            }, 60);
+            caja.innerText = "S/. " + precioOriginal;
+            caja.style.color = "#2196f3";
+            caja.style.textShadow = "0 0 8px #2196f3";
+        });
+        
+        caja.addEventListener('mouseleave', () => {
+            caja.innerText = "Pasa el mouse para ver precio";
+            caja.style.color = "#ffeb3b";
+            caja.style.textShadow = "none";
         });
     });
 }
 
 // ==========================================================================
-// 4. CONTADOR DE INACTIVIDAD GLOBAL AUTOMÁTICO (ABSTRACCIÓN POR TIEMPO)
+// 5. EFECTO DINÁMICO DE MUTACIÓN / ABSTRACCIÓN EN EL STAFF (elenco.html)
 // ==========================================================================
-let tiempoInactivo;
-let abstraidoGlobal = false;
-const audioAbstraccion = new Audio('assets/audio/abstraccion.mp3');
-
-function iniciarContadorAbstraccion() {
-    window.addEventListener('mousemove', resetearContador);
-    window.addEventListener('keypress', resetearContador);
-    window.addEventListener('click', resetearContador);
-    window.addEventListener('scroll', resetearContador);
-
-    resetearContador();
-}
-
-function resetearContador() {
-    if (abstraidoGlobal) return;
-
-    clearTimeout(tiempoInactivo);
+function ejecutarMutacionElenco() {
+    const tarjetasStaff = document.querySelectorAll('.staff-member');
+    const boton = document.getElementById('btn-abstraer-manual');
     
-    const overlay = document.getElementById('abstraction-overlay');
-    if (overlay && overlay.getAttribute('data-manual') !== 'true') {
-        overlay.style.opacity = '0';
-        overlay.style.pointerEvents = 'none';
+    if (boton) {
+        boton.disabled = true;
+        boton.innerText = "🌀 PROCESANDO CORRUPCIÓN...";
+        boton.style.background = "#333";
+        boton.style.boxShadow = "none";
     }
 
-    // Solo pausar si no se ha activado el botón manual
-    if (overlay && overlay.getAttribute('data-manual') !== 'true') {
-        audioAbstraccion.pause();
-        audioAbstraccion.currentTime = 0;
-    }
-
-    // 2 minutos de inactividad mandan al vacío automático
-    tiempoInactivo = setTimeout(pantallaFinalAbstraccion, 120000); 
-}
-
-function pantallaFinalAbstraccion() {
-    if (abstraidoGlobal) return;
-    abstraidoGlobal = true;
-
-    document.querySelectorAll('audio').forEach(a => a.pause());
-    audioAbstraccion.play().catch(e => console.log(e));
-
-    const overlay = document.getElementById('abstraction-overlay');
-    if (overlay) {
-        overlay.style.pointerEvents = 'all';
-        overlay.style.transition = 'opacity 3s ease-in-out';
-        overlay.style.opacity = '1';
-    }
+    tarjetasStaff.forEach((tarjeta, index) => {
+        setTimeout(() => {
+            tarjeta.style.position = "relative";
+            tarjeta.style.overflow = "hidden";
+            tarjeta.style.animation = "glitchEfecto 0.2s infinite alternate";
+            tarjeta.style.border = "4px solid #ff0055";
+            tarjeta.style.boxShadow = "0 0 25px #ff0055";
+            
+            const img = tarjeta.querySelector('img');
+            if (img) {
+                // CAMBIO: Imagen de error corrupto directa sin assets/
+                img.src = "imagen/modelo-3d-2.png";
+                img.style.filter = "hue-rotate(90deg) invert(1)";
+            }
+            
+            const infoNombre = tarjeta.querySelector('h3');
+            if(infoNombre) infoNombre.innerText = "ERR_DATA_LOST";
+            
+            const infoRol = tarjeta.querySelector('.rol');
+            if(infoRol) {
+                infoRol.innerText = "【 ABSTRAÍDO 】";
+                infoRol.style.color = "#ff0055";
+            }
+        }, index * 400); 
+    });
 
     setTimeout(() => {
         irAlVacioHTML();
-    }, 3000);
+    }, tarjetasStaff.length * 400 + 1500);
 }
 
-// ==========================================================================
-// 5. MECÁNICA EXCLUSIVA: MUTACIÓN MANUAL POR BOTÓN (TOTAL SILENCIO DE FONDO)
-// ==========================================================================
-let elElencoEstaCorrompido = false; 
-let audioHoverActual = null;
+// Configuración de audios interactivos en hover para personajes específicos del staff
+if (document.body.classList.contains('teatro-body')) {
+    window.addEventListener('DOMContentLoaded', configurarAudiosStaff);
+}
 
-function ejecutarMutacionElenco() {
-    if (elElencoEstaCorrompido) return;
-    elElencoEstaCorrompido = true;
+function configurarAudiosStaff() {
+    const miembrosConAudio = document.querySelectorAll('.staff-member[data-personaje]');
+    let audioHoverActual = null;
 
-    // Ocultar el botón para limpiar la pantalla
-    const boton = document.getElementById('btn-abstraer-manual');
-    if (boton) boton.style.display = 'none';
-
-    // Apagar por completo toda la música de fondo activa de la sección (Deja todo en silencio)
-    document.querySelectorAll('audio').forEach(a => a.pause());
-
-    // CAMBIO CRÍTICO: NO se reproduce audioAbstraccion.play() aquí para mantener el silencio absoluto.
-
-    // Activar opacidad morada sutil en el fondo sin bloquear clics de las tarjetas
-    const overlay = document.getElementById('abstraction-overlay');
-    if (overlay) {
-        overlay.setAttribute('data-manual', 'true');
-        overlay.style.pointerEvents = 'none'; 
-        overlay.style.transition = 'opacity 3s ease-in-out';
-        overlay.style.opacity = '0.3';
-    }
-
-    // Mutar exclusivamente las tarjetas con data-personaje (Suica y Barillas quedan inmunes)
-    const integrantes = document.querySelectorAll('.staff-member');
-    integrantes.forEach(tarjeta => {
-        const tipoId = tarjeta.getAttribute('data-personaje');
-        if (!tipoId) return; 
-
-        const imagen = tarjeta.querySelector('img');
-        const h3 = tarjeta.querySelector('h3');
-        const desc = tarjeta.querySelector('.desc');
-        const rol = tarjeta.querySelector('.rol');
-
-        // Modificar los textos a estilo corrompido
-        if (h3) {
-            h3.innerHTML = `${h3.innerText} <span style="color: #9c27b0; text-shadow: 2px 2px #000; font-family: 'Bungee', sans-serif; font-size: 0.9rem; display: block; margin-top: 5px;">[ABSTRAÍDO]</span>`;
-        }
-        if (rol) {
-            rol.style.color = '#4a148c';
-            rol.style.textShadow = '1px 1px #000';
-        }
-        if (desc) {
-            desc.innerText = "???";
-            desc.style.color = "#7b1fa2";
-            desc.style.fontWeight = "bold";
-        }
-
-        // Cambiar imágenes normales por las oscuras
-        if (imagen) {
-            if (tipoId === 'angulo') imagen.src = 'assets/imagen/doctor-angulo-abstraido.png';
-            if (tipoId === 'quispe') imagen.src = 'assets/imagen/quispe-pomni-abstraido.png';
-            if (tipoId === 'oliver') imagen.src = 'assets/imagen/oliver-abstraido.png';
-            if (tipoId === 'boza')   imagen.src = 'assets/imagen/boza-abstraido.png';
-            
-            imagen.style.filter = "grayscale(20%) contrast(140%)";
-            tarjeta.style.backgroundColor = "#12001a";
-            tarjeta.style.borderColor = "#4a148c";
-            tarjeta.style.boxShadow = "0 0 15px #9c27b0";
-        }
-
-        // Activar reproductores de audios individuales al pasar el mouse
+    miembrosConAudio.forEach(tarjeta => {
+        const personaje = tarjeta.getAttribute('data-personaje');
+        
         tarjeta.addEventListener('mouseenter', () => {
-            if (!elElencoEstaCorrompido) return;
-
             if (audioHoverActual) {
                 audioHoverActual.pause();
                 audioHoverActual.currentTime = 0;
             }
-
-            let rutaPista = '';
-            if (tipoId === 'quispe') rutaPista = 'assets/audio/musica-quispe.mp3';
-            if (tipoId === 'boza')   rutaPista = 'assets/audio/musica-boza.mp3';
-            if (tipoId === 'oliver') rutaPista = 'assets/audio/musica-oliver.mp3';
-            if (tipoId === 'angulo') rutaPista = 'assets/audio/musica-angulo.mp3';
-
-            if (rutaPista !== '') {
-                audioHoverActual = new Audio(rutaPista);
-                audioHoverActual.volume = 0.85;
+            // CAMBIO: Rutas de audios interactivas corregidas sin assets/
+            audioHoverActual = new Audio(`audio/hover_${personaje}.mp3`);
+            if (audioHoverActual) {
                 audioHoverActual.play().catch(e => console.log("Audio bloqueado: ", e));
             }
         });
@@ -325,10 +254,9 @@ function irAlVacioHTML() {
             <p style="color:white; font-family:'Roboto', sans-serif; font-size:1.4rem; text-align:center; max-width:600px; opacity:0.8; line-height:1.5; padding:0 20px;">
                 Pasaste más de 2 minutos sin registrar actividad. Tu mente se ha corrompido y ahora formas parte del Vacío del Circo Digital junto con el elenco.
             </p>
-            <div style="font-size:5rem; margin-top:30px; animation: pulse 1s infinite alternate; cursor:pointer;" onclick="window.location.reload()">🌀</div>
+            <button onclick="window.location.reload()" style="margin-top:30px; background:transparent; color:white; border:2px solid white; padding:12px 25px; font-family:'Bungee', sans-serif; font-size:1rem; border-radius:5px; cursor:pointer; transition:0.3s;" onmouseover="this.style.background='white'; this.style.color='black';" onmouseout="this.style.background='transparent'; this.style.color='white';">
+                🔄 CONTEMPLAR REINICIO MATRICIAL
+            </button>
         </div>
-        <style>
-            @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.2); } }
-        </style>
     `;
 }
